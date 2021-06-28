@@ -1,32 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".BT_Activity">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/map_view"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#FF1b73"
-        android:orientation="horizontal"
-        android:paddingTop="10dp">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="#FF1b73"
-            android:maxHeight="50dp"
-            android:padding="100dp"
-            android:scaleType="centerCrop"
-            app:srcCompat="@drawable/logo3" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
