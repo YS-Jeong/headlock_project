@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">headlock</string>
+    <string name="on">on</string>
+    <string name="off">off</string>
+    <string name="bluetooth">블루투스 디바이스</string>
+    <string name="wearing">wearing</string>
+    <string name="helmet">HELMET</string>
+    <string name="kickboard">KICKBOARD</string>
+    <string name="status">STATUS</string>
+    <string name="bt">BT</string>
+    <string name="disconnexted">DISCONNECTED</string>
+    <string name="helmet2">헬멧</string>
+    <string name="connection">연결하세요</string>
+    <string name="hel_state">미착용</string>
+    <string name="search">검색</string>
+    <string name="braek">브레이크</string>
+    <string name="break_state">미작동</string>
+</resources>
