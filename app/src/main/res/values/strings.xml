@@ -15,4 +15,6 @@
     <string name="search">검색</string>
     <string name="braek">브레이크</string>
     <string name="break_state">미작동</string>
+    <string name="title_location_service">title_location_service</string>
+    <string name="message_location_service">message_location_service</string>
 </resources>
