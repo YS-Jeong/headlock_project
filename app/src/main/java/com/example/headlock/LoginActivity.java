@@ -6,15 +6,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import net.daum.mf.map.api.CalloutBalloonAdapter;
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapReverseGeoCoder;
@@ -24,36 +30,63 @@ import net.daum.mf.map.api.MapView;
 
 
 public class LoginActivity extends AppCompatActivity implements MapView.CurrentLocationEventListener,
-   MapReverseGeoCoder.ReverseGeoCodingResultListener{
+   MapReverseGeoCoder.ReverseGeoCodingResultListener, MapView.POIItemEventListener{
+    //----------------------------------------------------------------------------------
+    // 변수 선언
+    //----------------------------------------------------------------------------------
+    private Button login_btn;
+    private Button join_btn;
+
 
     private static final String LOG_TAG="LoginActivity";
     MapView mapView;
 
+    private Dialog  customDialog;
+
+    private static final MapPoint CUSTOM_MARKER_POINT = MapPoint.mapPointWithGeoCoord(37.537229, 127.005515);
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
 
+    private MapPOIItem mCustomMarker;
+
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
+
+    // CalloutBalloonAdapter 인터페이스 구현
+    class CustomCalloutBalloonAdapter implements CalloutBalloonAdapter {
+        private final View mCalloutBalloon;
+
+        public CustomCalloutBalloonAdapter() {
+            mCalloutBalloon = getLayoutInflater().inflate(R.layout.activity_marker, null);
+        }
+
+        @Override
+        public View getCalloutBalloon(MapPOIItem poiItem) {
+            ((ImageView) mCalloutBalloon.findViewById(R.id.badge)).setImageResource(R.drawable.kickboard_mark);
+            ((TextView) mCalloutBalloon.findViewById(R.id.title)).setText(poiItem.getItemName());
+            ((TextView) mCalloutBalloon.findViewById(R.id.desc)).setText("배터리 표시할 부분");
+            return mCalloutBalloon;
+        }
+
+        @Override
+        public View getPressedCalloutBalloon(MapPOIItem poiItem) {
+            return null;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState); //onCreate함수 호출
 
-        setContentView(R.layout.activity_login); //setContentView = 화면에무엇을 보여줄것인지 설정
+        setContentView(R.layout.activity_map); //setContentView = 화면에무엇을 보여줄것인지 설정
 
         mapView = (MapView) findViewById(R.id.map_view);
 
         mapView.setCurrentLocationEventListener(this);
+        mapView.setPOIItemEventListener(this);
 
-        /*지도 중심점 :첨단정보통신 융합 산업기술원으로 위도, 경도 설정 */
-        MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(35.877379, 128.736241);
-
-        MapPOIItem marker = new MapPOIItem();
-        marker.setItemName("첨단정보통신융합산업기술원");
-        marker.setTag(0); //태그 번호 0번으로 설정
-        marker.setMapPoint(mapPoint);
-        marker.setMarkerType(MapPOIItem.MarkerType.BluePin);        // 기본으로 제공하는 BluePin 마커 모양.
-        marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin); // 마커를 클릭했을때, 기본으로 제공하는 RedPin 마커 모양.
-        mapView.addPOIItem(marker);
+        // 구현한 CalloutBalloonAdapter 등록
+        mapView.setCalloutBalloonAdapter(new CustomCalloutBalloonAdapter());
+        createDefaultMarker(mapView);
 
         //위치 권한 dialog 출력
        if (!checkLocationServicesStatus()) {
@@ -63,6 +96,60 @@ public class LoginActivity extends AppCompatActivity implements MapView.CurrentL
             checkRunTimePermission();
         }
 
+        customDialog = new Dialog(this);
+        customDialog.setContentView(R.layout.custom_dialog);
+       //이용하기 버튼누름 . 익명클래스를 사용하여 버튼에 리스너 객체를 설정정
+        findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+              /*  AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setTitle("제목").setMessage("내용");
+                AlertDialog alertDialog  = builder.create();
+//                alertDialog.getWindow().setGravity(Gravity.TOP);      다이얼로그 상단
+//                alertDialog.getWindow().setGravity(Gravity.CENTER);   다이얼로그 중앙
+                alertDialog.getWindow().setGravity(Gravity.BOTTOM);
+                alertDialog.show();*/
+                customDialog.getWindow().setGravity(Gravity.BOTTOM);
+                customDialog.show(); //회원가입과 로그인창으로 넘어가기위한 custom layout
+
+            }
+        });
+
+        join_btn.findViewById(R.id.join_btn);  //회원가입 버튼
+        login_btn.findViewById(R.id.login_btn); //로그인 버튼
+
+        //----------------------------------------------------------------------------------
+        // login 버튼 리스너 등록
+        //----------------------------------------------------------------------------------
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //로그인 화면으로 전환
+
+            }
+        });
+
+
+
+
+    }
+
+    //마커 생성하는 함수
+    private void createDefaultMarker(MapView mapView) {
+
+        /*지도 중심점 :첨단정보통신 융합 산업기술원으로 위도, 경도 설정 */
+        MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(35.877379, 128.736241);
+
+        MapPOIItem marker = new MapPOIItem();
+        marker.setItemName("HEADLOCK");
+        marker.setTag(0); //태그 번호 0번으로 설정
+        marker.setMapPoint(mapPoint);
+        marker.setMarkerType(MapPOIItem.MarkerType.CustomImage);// 마커타입을 커스텀 마커로지정
+        marker.setCustomImageResourceId(R.drawable.marker); //마커이미지 지정
+        marker.setCustomImageAutoscale(true);
+        marker.setCustomImageAnchor(0.5f,1.0f);
+        mapView.addPOIItem(marker);
     }
 
     @Override
@@ -252,6 +339,28 @@ public class LoginActivity extends AppCompatActivity implements MapView.CurrentL
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
+
+    @Override
+    public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
+
+    }
+
+    @Override
+    public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem) {
+        Toast.makeText(this, "Clicked " + mapPOIItem.getItemName() + " Callout Balloon", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCalloutBalloonOfPOIItemTouched(MapView mapView, MapPOIItem mapPOIItem, MapPOIItem.CalloutBalloonButtonType calloutBalloonButtonType) {
+    }
+
+    @Override
+    public void onDraggablePOIItemMoved(MapView mapView, MapPOIItem mapPOIItem, MapPoint mapPoint) {
+
+    }
+
+
+
 }
 
 
